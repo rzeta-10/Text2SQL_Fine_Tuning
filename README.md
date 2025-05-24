@@ -43,7 +43,7 @@ python3 prepare_spider_data.py
 ### 3. Fine-tune Model
 
 ```bash
-llamafactory-cli train configs/text2sql_config.yaml
+llamafactory-cli train text2sql/text2sql_config.yaml
 ```
 
 ### 4. Export Fine-tuned Model
