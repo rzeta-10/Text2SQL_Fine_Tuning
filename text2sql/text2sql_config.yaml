@@ -1,0 +1,51 @@
+### Model
+model_name_or_path: Qwen/Qwen2.5-0.5B-Instruct  # Small model essential for 6GB
+adapter_name_or_path: null
+
+### Method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: q_proj,v_proj  # Only target specific layers to save memory
+lora_rank: 16  # Reduced from 64 to save memory
+lora_alpha: 32  # Adjusted proportionally
+lora_dropout: 0.1
+
+### Memory Optimizations
+quantization_bit: 4  # 4-bit quantization to reduce memory usage
+
+### Dataset
+dataset: spider
+template: qwen
+cutoff_len: 1024  # Reduced from 2048 to save memory
+max_samples: 5000  # Reduced dataset size for faster training
+overwrite_cache: true
+preprocessing_num_workers: 4  # Reduced for laptop
+
+# For validation, ensure the code or config uses text2sql/spider_val.json as well if needed
+
+### Output
+output_dir: ./saves/qwen-0.5b-text2sql-rtx3060
+logging_steps: 20
+save_steps: 200
+plot_loss: true
+overwrite_output_dir: true
+
+### Train - Memory Optimized
+per_device_train_batch_size: 1  # Very small batch size
+gradient_accumulation_steps: 16  # Compensate with more accumulation
+learning_rate: 3.0e-4  # Slightly lower learning rate
+num_train_epochs: 2  # Fewer epochs for quick results
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+fp16: true  # Use fp16 instead of bf16 for RTX 3060
+gradient_checkpointing: true  # Enable gradient checkpointing
+dataloader_pin_memory: false  # Disable to save memory
+remove_unused_columns: false
+ddp_timeout: 180000000
+
+### Eval - Memory Optimized
+val_size: 0.05  # Smaller validation set
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 200
